@@ -1,8 +1,7 @@
 # GTM JEI Fix
 
-Minecraft 1.20.1 · Forge 47.x · JEI ≥ 15.55.0.201
-
-修复 GTCEu 配方在 JEI 中的物品提示只剩模组名的问题。
+修复 GTCEu 配方在 15.55.0.201 版本起的 JEI 中的物品提示只剩模组名的问题。
+所有代码由dsv4f1017完成
 
 ## 问题
 
@@ -27,10 +26,6 @@ Mixin 注入 `RecipeSlotBuilder#setCustomRenderer`——每个配方类目安装
 - GTCEu，或任何用 LDLib 构建 JEI 配方槽位的模组
 
 已在 JEI 15.55.0.201、15.74.0.229、15.74.0.234 上核对过注入点。
-
-## 安装
-
-把 jar 放进 `mods/` 即可，无需配置。生效时日志中会出现以 `[GTM JEI Fix]` 开头的行。
 
 ## 构建
 
