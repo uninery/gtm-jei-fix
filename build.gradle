@@ -1,0 +1,88 @@
+plugins {
+    id "dev.architectury.loom" version "1.6-SNAPSHOT"
+    id "maven-publish"
+}
+
+base {
+    archivesName = project.archives_base_name
+}
+
+version = project.mod_version
+group = project.maven_group
+
+java {
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
+}
+
+loom {
+    silentMojangMappingsLicense()
+    forge {
+        mixinConfigs = ["gtmjeifix.mixin.json"]
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { name = "Quilt"; url = "https://maven.quiltmc.org/repository/release/" }
+    maven { name = "ParchmentMC"; url = "https://maven.parchmentmc.org" }
+    maven { name = "BlameJared"; url = "https://maven.blamejared.com/" }
+    maven { name = "Architectury"; url = "https://maven.architectury.dev/" }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:$project.minecraft_version"
+    forge "net.minecraftforge:forge:$project.minecraft_version-$project.forge_version"
+
+    // Official (Mojang) names only: this mod's source is written against official names, and a
+    // single-layer mapping avoids loom writing a layered mappings jar during configuration.
+    mappings loom.officialMojangMappings()
+
+
+    // JEI API - the only dependency of this mod. Published with official Mojang class names,
+    // so no remapping is necessary; the "mod" configuration makes loom treat it as a mod jar.
+    // Only the common-api artifact is used: jei-...-forge-api duplicates mezz/jei/api/package-info,
+    // which makes loom's "remapping N mods" step fail with a duplicate class error.
+    modCompileOnly("mezz.jei:jei-$project.minecraft_version-common-api:$project.jei_version") { transitive = false }
+    // JEI itself, only so that "gradlew runClient" has JEI available for manual testing.
+    modRuntimeOnly("mezz.jei:jei-$project.minecraft_version-forge:$project.jei_version") { transitive = false }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.release = 17
+    options.compilerArgs << "-Xlint:-deprecation" << "-Xlint:-removal"
+}
+
+def modProps = [
+    minecraft_version: project.minecraft_version,
+    forge_version    : project.forge_version,
+    mod_id           : project.mod_id,
+    mod_name         : project.mod_name,
+    mod_license      : project.mod_license,
+    mod_version      : project.mod_version,
+    mod_authors      : project.mod_authors,
+    mod_description  : project.mod_description,
+    jei_version      : project.jei_version
+]
+
+processResources {
+    inputs.properties modProps
+    filesMatching(["META-INF/mods.toml", "pack.mcmeta"]) {
+        expand modProps
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+            "Specification-Title"   : project.mod_id,
+            "Specification-Vendor"  : project.mod_authors,
+            "Specification-Version" : "1",
+            "Implementation-Title"  : project.name,
+            "Implementation-Version": project.version,
+            "Implementation-Vendor" : project.mod_authors
+        ])
+    }
+}

@@ -1,0 +1,40 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+license = "${mod_license}"
+
+[[mods]]
+modId = "${mod_id}"
+version = "${mod_version}"
+displayName = "${mod_name}"
+authors = "${mod_authors}"
+description = '''
+修复 JEI 15.55.0.201 及以后版本中，GTCEu/LDLib 配方物品提示只剩模组名的问题。
+Fixes GTCEu/LDLib recipe ingredient tooltips showing only the mod name in JEI 15.55.0.201+.
+
+Compatibility patch for JEI 15.55.0.201 and newer (Minecraft 1.20.1 / Forge).
+
+Since JEI 15.55.0.201, recipe slot tooltips are built through the new 4-argument rich tooltip method of IIngredientRenderer. Ingredient renderers compiled against an older JEI (for example the ones LDLib registers for every GregTech Modern recipe category) only implement the legacy 3-argument rich tooltip method. Their tooltip content is silently dropped and JEI only appends the mod name.
+
+This mod routes that call back to the legacy overload, restoring the full ingredient tooltip (item name, GregTech data, ...) exactly as it was before JEI 15.55.0.201.
+'''
+
+[[dependencies.${mod_id}]]
+modId = "forge"
+mandatory = true
+versionRange = "[${forge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[${minecraft_version},1.21)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "jei"
+mandatory = false
+versionRange = "[15.55.0.201,)"
+ordering = "AFTER"
+side = "BOTH"
